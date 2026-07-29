@@ -1,18 +1,18 @@
 {
   "name": "@ohzw/worktree-runner-tui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A TUI for running and managing Git worktree sessions",
   "private": false,
   "type": "module",
   "license": "MIT",
   "author": "ohzw",
-  "homepage": "https://github.com/ohzw/worktree-command-tui#readme",
+  "homepage": "https://github.com/ohzw/worktree-runner-tui#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ohzw/worktree-command-tui.git"
+    "url": "git+https://github.com/ohzw/worktree-runner-tui.git"
   },
   "bugs": {
-    "url": "https://github.com/ohzw/worktree-command-tui/issues"
+    "url": "https://github.com/ohzw/worktree-runner-tui/issues"
   },
   "keywords": [
     "cli",
