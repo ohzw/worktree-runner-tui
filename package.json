@@ -9,7 +9,7 @@
   "homepage": "https://github.com/ohzw/worktree-command-tui#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ohzw/worktree-command-tui.git"
+    "url": "git+https://github.com/ohzw/worktree-command-tui.git"
   },
   "bugs": {
     "url": "https://github.com/ohzw/worktree-command-tui/issues"
@@ -35,7 +35,7 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
-    "wtr": "./dist/main.js"
+    "wtr": "dist/main.js"
   },
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
