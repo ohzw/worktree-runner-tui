@@ -69,7 +69,7 @@ function initGitRepo(root: string): void {
 function writeRepoConfigAndPackage(root: string, namespace: string): void {
 	writeFileSync(path.join(root, 'package.json'), '{}');
 	execFileSync('git', ['remote', 'add', 'origin', TEST_GITHUB_REMOTE_URL], {cwd: root});
-	writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+	writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 		namespace,
 		command: ['node', '-e', 'console.log("ready")'],
 		port: 31237,
@@ -113,7 +113,7 @@ describe('buildActions setup command', () => {
 		const root = realpathSync(mkdtempSync(path.join(tmpdir(), 'wctui-runtime-setup-')));
 		initGitRepo(root);
 		writeFileSync(path.join(root, 'package.json'), '{}');
-		writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+		writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 			namespace: 'runtime-setup',
 			command: ['node', '-e', 'require("node:fs").writeFileSync("started.txt", "yes")'],
 			setupCommand: ['node', '-e', 'console.log("setup output")'],
@@ -133,7 +133,7 @@ describe('buildActions setup command', () => {
 		const root = realpathSync(mkdtempSync(path.join(tmpdir(), 'wctui-runtime-start-')));
 		initGitRepo(root);
 		writeFileSync(path.join(root, 'package.json'), '{}');
-		writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+		writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 			namespace: 'runtime-start',
 			command: ['node', '-e', 'require("node:fs").writeFileSync("started.txt", "yes")'],
 			setupCommand: ['node', '-e', 'require("node:fs").writeFileSync("setup.txt", "no")'],
@@ -153,7 +153,7 @@ describe('buildActions setup command', () => {
 		const root = realpathSync(mkdtempSync(path.join(tmpdir(), 'wctui-runtime-branch-created-')));
 		initGitRepo(root);
 		writeFileSync(path.join(root, 'package.json'), '{}');
-		writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+		writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 			namespace: 'runtime-branch-created',
 			command: ['node', '-e', 'console.log("ready")'],
 			port: 31237,
@@ -219,7 +219,7 @@ describe('buildActions worktree actions', () => {
 		const openedPathLog = path.join(root, 'editor-opened.txt');
 		initGitRepo(root);
 		writeFileSync(path.join(root, 'package.json'), '{}');
-		writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+		writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 			namespace: 'runtime-editor',
 			command: ['node', '-e', 'console.log("ready")'],
 			editorCommand: ['node', '-e', 'require("node:fs").writeFileSync(process.argv[1], process.argv[2])', openedPathLog],
@@ -282,14 +282,14 @@ describe('buildActions worktree actions', () => {
 		const worktreePath = path.join(root, '.worktrees', 'feat-delete-active');
 		initGitRepo(root);
 		writeFileSync(path.join(root, 'package.json'), '{}');
-		writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+		writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 			namespace: 'runtime-delete-active',
 			command: ['node', '-e', 'setInterval(() => {}, 1000)'],
 			port: 31239,
 			requiredFiles: ['package.json'],
 			orphanMatchers: [],
 		}));
-		commitTrackedFiles(root, 'package.json', '.worktree-command-tui.jsonc');
+		commitTrackedFiles(root, 'package.json', '.worktree-runner-tui.jsonc');
 		execFileSync('git', ['worktree', 'add', '-b', 'feat/delete-active', worktreePath], {cwd: root});
 
 		const actions = await buildActions(root);
@@ -310,7 +310,7 @@ it('keeps running status after setup when a session is active', async () => {
 	const root = realpathSync(mkdtempSync(path.join(tmpdir(), 'wctui-runtime-active-')));
 	initGitRepo(root);
 	writeFileSync(path.join(root, 'package.json'), '{}');
-	writeFileSync(path.join(root, '.worktree-command-tui.jsonc'), JSON.stringify({
+	writeFileSync(path.join(root, '.worktree-runner-tui.jsonc'), JSON.stringify({
 		namespace: 'runtime-active',
 		command: ['node', '-e', 'setInterval(() => {}, 1000)'],
 		setupCommand: ['node', '-e', 'console.log("setup while active")'],

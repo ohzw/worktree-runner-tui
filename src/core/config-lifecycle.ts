@@ -7,7 +7,7 @@ const UNSAFE_NAMESPACE_RUN_PATTERN = /[^A-Za-z0-9._-]+/gu;
 const LEADING_NAMESPACE_HYPHENS_PATTERN = /^-+/u;
 const TRAILING_NAMESPACE_HYPHENS_PATTERN = /-+$/u;
 const SAFE_NAMESPACE_DESCRIPTION = '[A-Za-z0-9._-]+';
-const DEFAULT_NAMESPACE = 'worktree-command-tui';
+const DEFAULT_NAMESPACE = 'worktree-runner-tui';
 const MAX_CONFIG_BYTES = 64 * 1024;
 
 

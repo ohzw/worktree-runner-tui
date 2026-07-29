@@ -26,7 +26,7 @@ describe('Header', () => {
 
 		expect(text).toContain('Repo: repo next');
 		expect(text).toContain('✘ Error · feat/bad — failed next');
-		expect(text).not.toContain('Worktree Command TUI');
+		expect(text).not.toContain('Worktree Runner TUI');
 		expect(text).not.toContain('Namespace:');
 		expect(text).not.toContain('\u001b');
 		expect(text).not.toContain('owned');

@@ -124,6 +124,6 @@ describe('validateToolConfig', () => {
 describe('toSafeNamespace', () => {
 	it('replaces unsafe runs and falls back when no safe namespace remains', () => {
 		expect(toSafeNamespace('@scope/example app')).toBe('scope-example-app');
-		expect(toSafeNamespace('///')).toBe('worktree-command-tui');
+		expect(toSafeNamespace('///')).toBe('worktree-runner-tui');
 	});
 });

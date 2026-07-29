@@ -2,12 +2,12 @@ import {describe, expect, it} from 'vitest';
 import {mkdtempSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
-import {CONFIG_FILE_NAME, LEGACY_CONFIG_FILE_NAME} from './config.js';
+import {CONFIG_FILE_NAME, LEGACY_CONFIG_FILE_NAME, LEGACY_JSON_CONFIG_FILE_NAME} from './config.js';
 import {loadToolConfig} from './config-lifecycle.js';
 
 describe('loadToolConfig', () => {
-	it('loads .worktree-command-tui.jsonc with comments and preserves argv commands', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-config-'));
+	it('loads .worktree-runner-tui.jsonc with comments and preserves argv commands', async () => {
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-config-'));
 		writeFileSync(
 			path.join(root, CONFIG_FILE_NAME),
 			`{
@@ -31,8 +31,8 @@ describe('loadToolConfig', () => {
 		expect(config.ports).toEqual([34872, 5173]);
 	});
 
-	it('keeps loading legacy .worktree-command-tui.json configs', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-config-legacy-'));
+	it('keeps loading legacy .worktree-command-tui.jsonc configs', async () => {
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-config-legacy-jsonc-'));
 		writeFileSync(
 			path.join(root, LEGACY_CONFIG_FILE_NAME),
 			JSON.stringify({
@@ -45,6 +45,37 @@ describe('loadToolConfig', () => {
 		const config = await loadToolConfig({repoRoot: root});
 		expect(config.namespace).toBe('legacy-serve');
 		expect(config.command).toEqual(['npm', 'run', 'serve']);
+	});
+
+	it('keeps loading legacy .worktree-command-tui.json configs', async () => {
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-config-legacy-json-'));
+		writeFileSync(
+			path.join(root, LEGACY_JSON_CONFIG_FILE_NAME),
+			JSON.stringify({
+				namespace: 'legacy-json-serve',
+				command: ['npm', 'run', 'serve'],
+				port: 34872,
+			}),
+		);
+
+		const config = await loadToolConfig({repoRoot: root});
+		expect(config.namespace).toBe('legacy-json-serve');
+		expect(config.command).toEqual(['npm', 'run', 'serve']);
+	});
+
+	it('prefers the renamed config when both renamed and legacy files exist', async () => {
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-config-precedence-'));
+		writeFileSync(
+			path.join(root, LEGACY_CONFIG_FILE_NAME),
+			JSON.stringify({namespace: 'legacy-serve', command: ['npm', 'run', 'serve'], port: 34872}),
+		);
+		writeFileSync(
+			path.join(root, CONFIG_FILE_NAME),
+			JSON.stringify({namespace: 'renamed-serve', command: ['npm', 'run', 'serve'], port: 34872}),
+		);
+
+		const config = await loadToolConfig({repoRoot: root});
+		expect(config.namespace).toBe('renamed-serve');
 	});
 
 	it('normalizes legacy single port configs into ports arrays', async () => {

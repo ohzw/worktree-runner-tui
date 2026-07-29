@@ -1,7 +1,7 @@
 {
-  "name": "@ohzw/worktree-command-tui",
-  "version": "0.1.7",
-  "description": "A TUI for managing git worktrees",
+  "name": "@ohzw/worktree-runner-tui",
+  "version": "0.2.0",
+  "description": "A TUI for running and managing Git worktree sessions",
   "private": false,
   "type": "module",
   "license": "MIT",
@@ -35,8 +35,7 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
-    "wctui": "./dist/main.js",
-    "worktree-command-tui": "./dist/main.js"
+    "wtr": "./dist/main.js"
   },
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",

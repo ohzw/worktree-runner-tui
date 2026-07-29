@@ -73,11 +73,13 @@ export interface SessionPaths {
 	sessionFile: string;
 }
 const MAX_SESSION_BYTES = 16 * 1024;
+// Keep the original directory stable so upgrades can still inspect and stop active sessions.
+const SESSION_STORAGE_DIRECTORY = 'worktree-command-tui';
 
 
 
 export function getSessionPaths(gitCommonDir: string, namespace: string): SessionPaths {
-	const baseDir = path.join(gitCommonDir, 'worktree-command-tui');
+	const baseDir = path.join(gitCommonDir, SESSION_STORAGE_DIRECTORY);
 	return {
 		baseDir,
 		logsDir: path.join(baseDir, 'logs'),

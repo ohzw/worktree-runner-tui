@@ -1,6 +1,9 @@
+.DS_Store
 dist/
 node_modules/
 .worktrees/
+.worktree-runner-tui.json
+.worktree-runner-tui.jsonc
 .worktree-command-tui.json
 .worktree-command-tui.jsonc
 .npmrc

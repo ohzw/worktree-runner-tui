@@ -1,6 +1,13 @@
-export const CONFIG_FILE_NAME = '.worktree-command-tui.jsonc';
-export const LEGACY_CONFIG_FILE_NAME = '.worktree-command-tui.json';
-export const CONFIG_FILE_NAMES = [CONFIG_FILE_NAME, LEGACY_CONFIG_FILE_NAME] as const;
+export const CONFIG_FILE_NAME = '.worktree-runner-tui.jsonc';
+export const JSON_CONFIG_FILE_NAME = '.worktree-runner-tui.json';
+export const LEGACY_CONFIG_FILE_NAME = '.worktree-command-tui.jsonc';
+export const LEGACY_JSON_CONFIG_FILE_NAME = '.worktree-command-tui.json';
+export const CONFIG_FILE_NAMES = [
+	CONFIG_FILE_NAME,
+	JSON_CONFIG_FILE_NAME,
+	LEGACY_CONFIG_FILE_NAME,
+	LEGACY_JSON_CONFIG_FILE_NAME,
+] as const;
 
 export interface ToolConfig {
 	namespace: string;

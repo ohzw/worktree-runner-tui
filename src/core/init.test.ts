@@ -7,7 +7,7 @@ import {CONFIG_FILE_NAME, LEGACY_CONFIG_FILE_NAME, parseJsonc} from './config.js
 
 describe('runInit', () => {
 	it('creates a config file with defaults derived from project metadata', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-init-'));
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-init-'));
 		const packageJson = {
 			name: 'example-app',
 			packageManager: 'bun@1.2.3',
@@ -35,7 +35,7 @@ describe('runInit', () => {
 	});
 
 	it('uses an explicit alternative script when dev/start/serve are missing', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-init-fallback-'));
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-init-fallback-'));
 		const packageJson = {
 			name: 'example-app',
 			scripts: {
@@ -64,21 +64,21 @@ describe('runInit', () => {
 	});
 
 	it('refuses to overwrite an existing config without --force', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-init-existing-'));
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-init-existing-'));
 		const configPath = path.join(root, CONFIG_FILE_NAME);
 		writeFileSync(configPath, '{}');
 		expect(runInit({workspaceRoot: root, force: false})).rejects.toThrow(`Config file already exists: ${configPath}`);
 	});
 
-	it('refuses to overwrite a legacy json config without --force', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-init-existing-legacy-'));
+	it('refuses to overwrite a legacy config without --force', async () => {
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-init-existing-legacy-'));
 		const configPath = path.join(root, LEGACY_CONFIG_FILE_NAME);
 		writeFileSync(configPath, '{}');
 		expect(runInit({workspaceRoot: root, force: false})).rejects.toThrow(`Config file already exists: ${configPath}`);
 	});
 
 	it('overwrites an existing config when force is set', async () => {
-		const root = mkdtempSync(path.join(tmpdir(), 'wctui-init-force-'));
+		const root = mkdtempSync(path.join(tmpdir(), 'wtr-init-force-'));
 		const configPath = path.join(root, CONFIG_FILE_NAME);
 		writeFileSync(configPath, '{}');
 

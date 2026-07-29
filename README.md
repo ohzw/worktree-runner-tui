@@ -1,6 +1,6 @@
-# worktree-command-tui
+# Worktree Runner TUI
 
-`worktree-command-tui` is a terminal UI for managing Git worktrees from inside a repository.
+`worktree-runner-tui` is a terminal UI for running and managing Git worktree sessions from inside a repository.
 It keeps one active runtime session per namespace, lets you switch worktrees with the keyboard, and keeps logs/process cleanup tied to the repo's shared Git state.
 
 <img width="1023" height="582" alt="image" src="https://github.com/user-attachments/assets/ef33c2aa-0af4-4701-b1ec-fa9289e8ee3a" />
@@ -29,13 +29,22 @@ It keeps one active runtime session per namespace, lets you switch worktrees wit
 ## Installation
 
 ```bash
-npm install -g @ohzw/worktree-command-tui
+npm install -g @ohzw/worktree-runner-tui
 ```
 
-Installed binaries:
+Installed binary: `wtr`
 
-- `wctui`
-- `worktree-command-tui` (compatibility alias)
+### Migrating from `@ohzw/worktree-command-tui`
+
+The renamed npm package is published separately. Replace the old global installation:
+
+```bash
+npm uninstall -g @ohzw/worktree-command-tui
+npm install -g @ohzw/worktree-runner-tui
+```
+
+Existing `.worktree-command-tui.jsonc` and `.worktree-command-tui.json` files remain supported. New configuration is written as `.worktree-runner-tui.jsonc`.
+Session records and logs keep their existing Git common-dir location so an in-flight session remains controllable after upgrading.
 
 ## Quick start
 
@@ -44,24 +53,24 @@ Installed binaries:
 Run this from the repo root or any subdirectory inside the repo:
 
 ```bash
-wctui init
+wtr init
 ```
 
-This writes `.worktree-command-tui.jsonc` at the repository root.
+This writes `.worktree-runner-tui.jsonc` at the repository root.
 
 To overwrite an existing config:
 
 ```bash
-wctui init --force
+wtr init --force
 ```
 
 ### 2) Start the TUI
 
 ```bash
-wctui
+wtr
 ```
 
-If config is missing, the CLI exits with a message telling you to run `wctui init`.
+If config is missing, the CLI exits with a message telling you to run `wtr init`.
 
 ## Keyboard shortcuts
 
@@ -90,7 +99,7 @@ Additional shortcuts from the help window:
 
 ## Security and network behavior
 
-`wctui` executes the argv commands stored in `.worktree-command-tui.jsonc` when you press the matching keys. Treat repository config as trusted code:
+`wtr` executes the argv commands stored in the selected configuration file when you press the matching keys. Treat repository config as trusted code:
 
 - `Enter` starts `command` in the selected worktree; pressing it on the active worktree restarts that session.
 - `i` runs `setupCommand`; package-manager install commands may run dependency lifecycle scripts.
@@ -104,15 +113,17 @@ The TUI also reads pull request metadata with the GitHub CLI when `remote.origin
 
 The tool looks for config in this order:
 
-1. `.worktree-command-tui.jsonc`
-2. `.worktree-command-tui.json`
+1. `.worktree-runner-tui.jsonc`
+2. `.worktree-runner-tui.json`
+3. `.worktree-command-tui.jsonc` (legacy)
+4. `.worktree-command-tui.json` (legacy)
 
 Example config:
 
 ```jsonc
 {
   // Session namespace used for git-common-dir state files and logs.
-  "namespace": "worktree-command-tui",
+  "namespace": "worktree-runner-tui",
 
   // Command launched in the selected worktree.
   "command": ["npm", "run", "dev"],

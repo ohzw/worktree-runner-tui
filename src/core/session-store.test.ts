@@ -5,9 +5,10 @@ import path from 'node:path';
 import {getSessionPaths, readSessionRecord, writeSessionRecord} from './session-store.js';
 
 describe('session-store', () => {
-	it('writes state under git common dir namespace path', async () => {
-		const commonDir = mkdtempSync(path.join(tmpdir(), 'wctui-session-'));
+	it('keeps state in the pre-rename directory so active sessions survive upgrades', async () => {
+		const commonDir = mkdtempSync(path.join(tmpdir(), 'wtr-session-'));
 		const paths = getSessionPaths(commonDir, 'rojo-serve');
+		expect(paths.baseDir).toBe(path.join(commonDir, 'worktree-command-tui'));
 		await writeSessionRecord(paths, {
 			namespace: 'rojo-serve',
 			worktreePath: '/repo/.worktree/feat-a',
