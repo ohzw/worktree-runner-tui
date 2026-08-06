@@ -1,9 +1,10 @@
 import {Box, Text} from 'ink';
 import type {AppRow} from '../core/runtime.js';
-import {projectWorktreeListRow, sanitizeInlineText} from '../core/worktree-projection.js';
+import {projectPullRequest, projectWorktreeListRow, sanitizeInlineText} from '../core/worktree-projection.js';
 import {getScrollbarThumbRows, sliceListViewport} from '../terminal/viewport.js';
 
 const MIN_BRANCH_WIDTH = 24;
+const PULL_REQUEST_ICON = '\u{f407}'; // Nerd Font nf-oct-git_pull_request
 type RowColor = 'cyan' | 'green' | 'red' | undefined;
 
 function getIndicator(state: ReturnType<typeof projectWorktreeListRow>['state']): string {
@@ -62,7 +63,7 @@ export function WorktreeList({
 	isFilterInputOpen?: boolean;
 	totalRowCount?: number;
 }) {
-	const branchWidth = Math.max(MIN_BRANCH_WIDTH, (width ?? 34) - 7);
+	const branchWidth = Math.max(MIN_BRANCH_WIDTH, (width ?? 34) - 9);
 	const viewport = sliceListViewport(rows, height === undefined ? rows.length : height - 3, scrollOffset);
 	const contentViewportHeight = viewport.viewportHeight;
 	const effectiveScrollOffset = viewport.scrollOffset;
@@ -101,7 +102,12 @@ export function WorktreeList({
 				const tagSuffix = projection.isMain ? ' [root]' : '';
 				const color = getRowColor(projection);
 				const branchText = sanitizeInlineText(row.branch);
-				const line = `${isSelected ? '>' : ' '} ${getIndicator(projection.state)} ${truncateLabel(branchText, Math.max(1, branchWidth - tagSuffix.length))}${tagSuffix}`;
+				const pullRequest = projectPullRequest(row);
+				const pullRequestIndicatorColor = pullRequest.kind === 'found' && !pullRequest.isHistorical
+					? pullRequest.isDraft ? 'yellow' : 'green'
+					: undefined;
+				const pullRequestIndicatorDimColor = pullRequest.kind === 'found' && pullRequest.isHistorical;
+				const branchLabel = `${truncateLabel(branchText, Math.max(1, branchWidth - tagSuffix.length))}${tagSuffix}`;
 				return (
 					<Box key={row.path} flexDirection="row">
 						<Box flexGrow={1} flexShrink={1}>
@@ -112,7 +118,13 @@ export function WorktreeList({
 								bold={projection.state === 'active'}
 								wrap="truncate-end"
 							>
-								{line}
+								{`${isSelected ? '>' : ' '} ${getIndicator(projection.state)} `}
+								{pullRequest.kind === 'found' ? (
+									<Text color={pullRequestIndicatorColor} dimColor={pullRequestIndicatorDimColor}>
+										{PULL_REQUEST_ICON}
+									</Text>
+								) : ' '}
+								{` ${branchLabel}`}
 							</Text>
 						</Box>
 						{showScrollbar ? (

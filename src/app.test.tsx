@@ -191,7 +191,7 @@ it('renders colored pane labels and active marker in the main layout', () => {
 	expect(lastFrame()).toContain('Idle');
 	expect(lastFrame()).toContain('/ Filter');
 	expect(lastFrame()).not.toContain('PageUp');
-	expect(stripAnsi(lastFrame())).toContain('* feat/a');
+	expect(stripAnsi(lastFrame())).toContain('*   feat/a');
 });
 
 it('renders setup in the primary key hints only when setup is available', () => {
@@ -357,7 +357,7 @@ it('stacks panes responsively on medium-width terminals when there is enough ver
 	);
 	expect(lastFrame()).toContain('Worktrees');
 	expect(lastFrame()).toContain('Selection / Action');
-	expect(stripAnsi(lastFrame())).toContain('> - develop [root]');
+	expect(stripAnsi(lastFrame())).toContain('> -   develop [root]');
 });
 
 it('shows logs while keeping stacked worktree rows on tall narrow terminals', () => {
@@ -651,12 +651,12 @@ it('scrolls worktree list with SGR mouse wheel input', async () => {
 		<App initialModel={model} actions={makeFakeActions(model)} windowSizeOverride={{columns: 100, rows: 16}} />,
 	);
 	expect(stripAnsi(lastFrame())).not.toContain('feat-8');
-	expect(stripAnsi(lastFrame())).toContain('│ > * feat-0');
+	expect(stripAnsi(lastFrame())).toContain('│ > *   feat-0');
 	stdin.write('\u001B[<65;1;6M');
 	await waitForInput();
 	await waitForInput();
-	expect(stripAnsi(lastFrame())).toContain('│   - feat-3');
-	expect(stripAnsi(lastFrame())).not.toContain('│ > - feat-0');
+	expect(stripAnsi(lastFrame())).toContain('│   -   feat-3');
+	expect(stripAnsi(lastFrame())).not.toContain('│ > -   feat-0');
 });
 
 it('scrolls selection details with SGR mouse wheel in tall split layout', async () => {

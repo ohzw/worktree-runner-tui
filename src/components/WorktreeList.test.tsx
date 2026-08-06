@@ -64,13 +64,102 @@ describe('WorktreeList', () => {
 		expect(rowText).not.toContain('\u001b');
 	});
 
-	it('truncates narrow rows without dropping branch or root indicators', () => {
+	it('renders the Nerd Font pull request icon only for found PR metadata', () => {
+		const rows: AppRow[] = [
+			{
+				path: '/repo/.worktree/feat-with-pr',
+				shortPath: '.worktree/feat-with-pr',
+				branch: 'feat/with-pr',
+				tags: [],
+				pullRequest: {
+					kind: 'found',
+					number: 42,
+					title: 'Add auth',
+					url: 'https://github.com/example/repo/pull/42',
+					state: 'OPEN',
+					isDraft: false,
+					baseBranch: 'main',
+				},
+			},
+			{
+				path: '/repo/.worktree/feat-draft',
+				shortPath: '.worktree/feat-draft',
+				branch: 'feat/draft',
+				tags: [],
+				pullRequest: {
+					kind: 'found',
+					number: 43,
+					title: 'Draft auth',
+					url: 'https://github.com/example/repo/pull/43',
+					state: 'OPEN',
+					isDraft: true,
+					baseBranch: 'main',
+				},
+			},
+			{
+				path: '/repo/.worktree/feat-merged',
+				shortPath: '.worktree/feat-merged',
+				branch: 'feat/merged',
+				tags: [],
+				pullRequest: {
+					kind: 'found',
+					number: 44,
+					title: 'Merged auth',
+					url: 'https://github.com/example/repo/pull/44',
+					state: 'MERGED',
+					isDraft: false,
+					baseBranch: 'main',
+				},
+			},
+			{
+				path: '/repo/.worktree/feat-without-pr',
+				shortPath: '.worktree/feat-without-pr',
+				branch: 'feat/without-pr',
+				tags: [],
+				pullRequest: {kind: 'none'},
+			},
+			{
+				path: '/repo/.worktree/feat-unavailable',
+				shortPath: '.worktree/feat-unavailable',
+				branch: 'feat/unavailable',
+				tags: [],
+				pullRequest: {kind: 'unavailable'},
+			},
+		];
+		const tree = WorktreeList({rows, selectedIndex: 0, width: 80, height: 10, stacked: false});
+		const rendered = textContent(tree);
+
+		expect(rendered).toContain('\u{f407} feat/with-pr');
+		expect(rendered).toContain('\u{f407} feat/draft');
+		expect(rendered).toContain('\u{f407} feat/merged');
+		expect(rendered).not.toContain('\u{f407} feat/without-pr');
+		expect(rendered).not.toContain('\u{f407} feat/unavailable');
+		const iconElements = collectElements(tree).filter(element => textContent(element.props.children) === '\u{f407}');
+		expect(iconElements).toHaveLength(3);
+		expect(iconElements.map(element => [element.props.color, element.props.dimColor])).toEqual([
+			['green', false],
+			['yellow', false],
+			[undefined, true],
+		]);
+	});
+
+
+	it('truncates narrow rows without dropping branch, PR, or root indicators', () => {
 		const rows: AppRow[] = [
 			{
 				path: '/repo',
 				shortPath: '.',
 				branch: 'feature/with-a-really-long-branch-name',
 				tags: ['main'],
+				pullRequest: {
+					kind: 'found',
+					number: 42,
+					title: 'Long branch',
+					url: 'https://github.com/example/repo/pull/42',
+					state: 'OPEN',
+					isDraft: false,
+					baseBranch: 'main',
+				},
 				headSha: '46af3f1c',
 				headCommit: {message: 'Selection pane metadata'},
 			},
@@ -79,7 +168,7 @@ describe('WorktreeList', () => {
 		const tree = WorktreeList({rows, selectedIndex: 0, width: 34, stacked: false});
 		const rowText = getRowText(tree, '[root]');
 
-		expect(rowText).toContain('> - ');
+		expect(rowText).toContain(`> - \u{f407} `);
 		expect(rowText).toContain('[root]');
 		expect(rowText).toContain('…');
 		expect(rowText).not.toContain('46af3f1c');
