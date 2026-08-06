@@ -1,6 +1,6 @@
 {
   "name": "@ohzw/worktree-runner-tui",
-  "version": "0.3.0",
+  "version": "0.2.2",
   "description": "A TUI for running and managing Git worktree sessions",
   "private": false,
   "type": "module",
