@@ -1,10 +1,17 @@
 import {Box, Text} from 'ink';
 import type {AppRow} from '../core/runtime.js';
-import {projectWorktreeListRow, sanitizeInlineText} from '../core/worktree-projection.js';
+import {projectPullRequest, projectWorktreeListRow, sanitizeInlineText} from '../core/worktree-projection.js';
 import {getScrollbarThumbRows, sliceListViewport} from '../terminal/viewport.js';
 
 const MIN_BRANCH_WIDTH = 24;
+const PULL_REQUEST_ICONS = {
+	OPEN: '\u{f407}', // Nerd Font nf-oct-git_pull_request
+	DRAFT: '\u{f4dd}', // Nerd Font nf-oct-git_pull_request_draft
+	CLOSED: '\u{f4dc}', // Nerd Font nf-oct-git_pull_request_closed
+	MERGED: '\u{f419}', // Nerd Font nf-oct-git_merge
+} as const;
 type RowColor = 'cyan' | 'green' | 'red' | undefined;
+type PullRequestIndicatorColor = 'green' | 'yellow' | 'red' | 'magenta' | undefined;
 
 function getIndicator(state: ReturnType<typeof projectWorktreeListRow>['state']): string {
 	if (state === 'active') {
@@ -62,7 +69,7 @@ export function WorktreeList({
 	isFilterInputOpen?: boolean;
 	totalRowCount?: number;
 }) {
-	const branchWidth = Math.max(MIN_BRANCH_WIDTH, (width ?? 34) - 7);
+	const branchWidth = Math.max(MIN_BRANCH_WIDTH, (width ?? 34) - 9);
 	const viewport = sliceListViewport(rows, height === undefined ? rows.length : height - 3, scrollOffset);
 	const contentViewportHeight = viewport.viewportHeight;
 	const effectiveScrollOffset = viewport.scrollOffset;
@@ -101,7 +108,18 @@ export function WorktreeList({
 				const tagSuffix = projection.isMain ? ' [root]' : '';
 				const color = getRowColor(projection);
 				const branchText = sanitizeInlineText(row.branch);
-				const line = `${isSelected ? '>' : ' '} ${getIndicator(projection.state)} ${truncateLabel(branchText, Math.max(1, branchWidth - tagSuffix.length))}${tagSuffix}`;
+				const pullRequest = projectPullRequest(row);
+				const pullRequestIcon = pullRequest.kind === 'found'
+					? pullRequest.isDraft ? PULL_REQUEST_ICONS.DRAFT : PULL_REQUEST_ICONS[pullRequest.state]
+					: undefined;
+				const pullRequestIndicatorColor: PullRequestIndicatorColor = pullRequest.kind !== 'found'
+					? undefined
+					: pullRequest.isDraft
+						? 'yellow'
+						: pullRequest.state === 'OPEN'
+							? 'green'
+							: pullRequest.state === 'CLOSED' ? 'red' : 'magenta';
+				const branchLabel = `${truncateLabel(branchText, Math.max(1, branchWidth - tagSuffix.length))}${tagSuffix}`;
 				return (
 					<Box key={row.path} flexDirection="row">
 						<Box flexGrow={1} flexShrink={1}>
@@ -112,7 +130,13 @@ export function WorktreeList({
 								bold={projection.state === 'active'}
 								wrap="truncate-end"
 							>
-								{line}
+								{`${isSelected ? '>' : ' '} ${getIndicator(projection.state)} `}
+								{pullRequestIcon === undefined ? ' ' : (
+									<Text color={pullRequestIndicatorColor} dimColor={false}>
+										{pullRequestIcon}
+									</Text>
+								)}
+								{` ${branchLabel}`}
 							</Text>
 						</Box>
 						{showScrollbar ? (

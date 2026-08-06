@@ -16,6 +16,7 @@ It keeps one active runtime session per namespace, lets you switch worktrees wit
 - Open the selected branch's pull request in a browser with `o`
 - Delete a non-root worktree from the TUI with `d`, then confirm
 - Inspect branch, upstream, working tree, and pull request metadata in the detail pane
+- Show state-specific Nerd Font pull request indicators next to branches with detected PR metadata (Open: ``/green, Draft: ``/yellow, Closed: ``/red, Merged: ``/magenta)
 - Tail ANSI-colored logs inline or in a full-screen log view
 - Generate and load JSONC config with comments and trailing commas
 
@@ -25,6 +26,7 @@ It keeps one active runtime session per namespace, lets you switch worktrees wit
 - Git
 - A Git repository (additional linked worktrees optional)
 - Optional: GitHub CLI (`gh`) and a GitHub origin remote for pull request metadata and `o` / Open PR
+- Recommended: a Nerd Font terminal font for the GitHub pull request indicators (``, ``, ``, ``) in the Worktree list
 
 ## Installation
 
