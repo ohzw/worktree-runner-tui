@@ -4,7 +4,12 @@ import {projectPullRequest, projectWorktreeListRow, sanitizeInlineText} from '..
 import {getScrollbarThumbRows, sliceListViewport} from '../terminal/viewport.js';
 
 const MIN_BRANCH_WIDTH = 24;
-const PULL_REQUEST_ICON = '\u{f407}'; // Nerd Font nf-oct-git_pull_request
+const PULL_REQUEST_ICONS = {
+	OPEN: '\u{f407}', // Nerd Font nf-oct-git_pull_request
+	DRAFT: '\u{f4dd}', // Nerd Font nf-oct-git_pull_request_draft
+	CLOSED: '\u{f4dc}', // Nerd Font nf-oct-git_pull_request_closed
+	MERGED: '\u{f419}', // Nerd Font nf-oct-git_merge
+} as const;
 type RowColor = 'cyan' | 'green' | 'red' | undefined;
 
 function getIndicator(state: ReturnType<typeof projectWorktreeListRow>['state']): string {
@@ -103,6 +108,9 @@ export function WorktreeList({
 				const color = getRowColor(projection);
 				const branchText = sanitizeInlineText(row.branch);
 				const pullRequest = projectPullRequest(row);
+				const pullRequestIcon = pullRequest.kind === 'found'
+					? pullRequest.isDraft ? PULL_REQUEST_ICONS.DRAFT : PULL_REQUEST_ICONS[pullRequest.state]
+					: undefined;
 				const pullRequestIndicatorColor = pullRequest.kind === 'found' && !pullRequest.isHistorical
 					? pullRequest.isDraft ? 'yellow' : 'green'
 					: undefined;
@@ -119,11 +127,11 @@ export function WorktreeList({
 								wrap="truncate-end"
 							>
 								{`${isSelected ? '>' : ' '} ${getIndicator(projection.state)} `}
-								{pullRequest.kind === 'found' ? (
+								{pullRequestIcon === undefined ? ' ' : (
 									<Text color={pullRequestIndicatorColor} dimColor={pullRequestIndicatorDimColor}>
-										{PULL_REQUEST_ICON}
+										{pullRequestIcon}
 									</Text>
-								) : ' '}
+								)}
 								{` ${branchLabel}`}
 							</Text>
 						</Box>

@@ -112,6 +112,21 @@ describe('WorktreeList', () => {
 				},
 			},
 			{
+				path: '/repo/.worktree/feat-closed',
+				shortPath: '.worktree/feat-closed',
+				branch: 'feat/closed',
+				tags: [],
+				pullRequest: {
+					kind: 'found',
+					number: 45,
+					title: 'Closed auth',
+					url: 'https://github.com/example/repo/pull/45',
+					state: 'CLOSED',
+					isDraft: false,
+					baseBranch: 'main',
+				},
+			},
+			{
 				path: '/repo/.worktree/feat-without-pr',
 				shortPath: '.worktree/feat-without-pr',
 				branch: 'feat/without-pr',
@@ -130,16 +145,20 @@ describe('WorktreeList', () => {
 		const rendered = textContent(tree);
 
 		expect(rendered).toContain('\u{f407} feat/with-pr');
-		expect(rendered).toContain('\u{f407} feat/draft');
-		expect(rendered).toContain('\u{f407} feat/merged');
-		expect(rendered).not.toContain('\u{f407} feat/without-pr');
-		expect(rendered).not.toContain('\u{f407} feat/unavailable');
-		const iconElements = collectElements(tree).filter(element => textContent(element.props.children) === '\u{f407}');
-		expect(iconElements).toHaveLength(3);
-		expect(iconElements.map(element => [element.props.color, element.props.dimColor])).toEqual([
-			['green', false],
-			['yellow', false],
-			[undefined, true],
+		expect(rendered).toContain('\u{f4dd} feat/draft');
+		expect(rendered).toContain('\u{f4dc} feat/closed');
+		expect(rendered).toContain('\u{f419} feat/merged');
+		for (const icon of ['\u{f407}', '\u{f4dd}', '\u{f4dc}', '\u{f419}']) {
+			expect(rendered).not.toContain(`${icon} feat/without-pr`);
+			expect(rendered).not.toContain(`${icon} feat/unavailable`);
+		}
+		const iconElements = collectElements(tree).filter(element => ['\u{f407}', '\u{f4dd}', '\u{f4dc}', '\u{f419}'].some(icon => icon === textContent(element.props.children)));
+		expect(iconElements).toHaveLength(4);
+		expect(iconElements.map(element => [textContent(element.props.children), element.props.color, element.props.dimColor])).toEqual([
+			['\u{f407}', 'green', false],
+			['\u{f4dd}', 'yellow', false],
+			['\u{f419}', undefined, true],
+			['\u{f4dc}', undefined, true],
 		]);
 	});
 
