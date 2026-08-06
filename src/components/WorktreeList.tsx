@@ -11,6 +11,7 @@ const PULL_REQUEST_ICONS = {
 	MERGED: '\u{f419}', // Nerd Font nf-oct-git_merge
 } as const;
 type RowColor = 'cyan' | 'green' | 'red' | undefined;
+type PullRequestIndicatorColor = 'green' | 'yellow' | 'red' | 'magenta' | undefined;
 
 function getIndicator(state: ReturnType<typeof projectWorktreeListRow>['state']): string {
 	if (state === 'active') {
@@ -111,10 +112,13 @@ export function WorktreeList({
 				const pullRequestIcon = pullRequest.kind === 'found'
 					? pullRequest.isDraft ? PULL_REQUEST_ICONS.DRAFT : PULL_REQUEST_ICONS[pullRequest.state]
 					: undefined;
-				const pullRequestIndicatorColor = pullRequest.kind === 'found' && !pullRequest.isHistorical
-					? pullRequest.isDraft ? 'yellow' : 'green'
-					: undefined;
-				const pullRequestIndicatorDimColor = pullRequest.kind === 'found' && pullRequest.isHistorical;
+				const pullRequestIndicatorColor: PullRequestIndicatorColor = pullRequest.kind !== 'found'
+					? undefined
+					: pullRequest.isDraft
+						? 'yellow'
+						: pullRequest.state === 'OPEN'
+							? 'green'
+							: pullRequest.state === 'CLOSED' ? 'red' : 'magenta';
 				const branchLabel = `${truncateLabel(branchText, Math.max(1, branchWidth - tagSuffix.length))}${tagSuffix}`;
 				return (
 					<Box key={row.path} flexDirection="row">
@@ -128,7 +132,7 @@ export function WorktreeList({
 							>
 								{`${isSelected ? '>' : ' '} ${getIndicator(projection.state)} `}
 								{pullRequestIcon === undefined ? ' ' : (
-									<Text color={pullRequestIndicatorColor} dimColor={pullRequestIndicatorDimColor}>
+									<Text color={pullRequestIndicatorColor} dimColor={false}>
 										{pullRequestIcon}
 									</Text>
 								)}

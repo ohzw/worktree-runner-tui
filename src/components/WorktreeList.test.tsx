@@ -157,8 +157,8 @@ describe('WorktreeList', () => {
 		expect(iconElements.map(element => [textContent(element.props.children), element.props.color, element.props.dimColor])).toEqual([
 			['\u{f407}', 'green', false],
 			['\u{f4dd}', 'yellow', false],
-			['\u{f419}', undefined, true],
-			['\u{f4dc}', undefined, true],
+			['\u{f419}', 'magenta', false],
+			['\u{f4dc}', 'red', false],
 		]);
 	});
 
