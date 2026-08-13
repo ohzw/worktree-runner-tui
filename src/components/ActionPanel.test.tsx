@@ -63,6 +63,30 @@ describe('ActionPanel', () => {
 		expect(frame).not.toContain('null');
 	});
 
+	it('wraps detail rows instead of truncating them', () => {
+		const {lastFrame} = render(
+			<ActionPanel
+				selectedRow={makeRow({
+					branch: 'feature/this-is-a-long-branch-name-for-a-narrow-pane',
+					path: '/repo/.worktree/feature/deeply-nested-worktree',
+					headSha: '46af3f1c',
+					headCommit: {message: 'Render the complete commit summary in narrow panes'},
+				})}
+				activePath={null}
+				setupAvailable={false}
+				stacked={false}
+				width={30}
+				height={30}
+			/>,
+		);
+		const frame = stripAnsi(lastFrame());
+
+		const compactFrame = frame.replace(/[\s│╭╮╰╯─]/gu, '');
+		expect(compactFrame).toContain('Branch:feature/this-is-a-long-branch-name-for-a-narrow-pane');
+		expect(compactFrame).toContain('FullPath:/repo/.worktree/feature/deeply-nested-worktree');
+		expect(compactFrame).toContain('HEAD:46af3f1cRenderthecompletecommitsummaryinnarrowpanes');
+	});
+
 	it('falls back safely when head metadata is missing', () => {
 		const {lastFrame} = render(
 			<ActionPanel
