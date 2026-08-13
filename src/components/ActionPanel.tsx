@@ -285,7 +285,7 @@ export function ActionPanel({
 				{visibleLines.map((line, index) => (
 					<Box key={`${effectiveScrollOffset + index}-${line.text}`} flexDirection="row">
 						<Box flexGrow={1} flexShrink={1}>
-							<Text color={line.color} dimColor={line.dimColor} bold={line.bold} wrap="truncate-end">
+							<Text color={line.color} dimColor={line.dimColor} bold={line.bold} wrap="wrap">
 								{line.text}
 							</Text>
 						</Box>

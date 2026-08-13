@@ -882,12 +882,14 @@ it('truncates long branch labels in the worktree pane', () => {
 	expect(branchLine).not.toContain('feature/this-is-a-very-long-branch-name-that-wraps');
 });
 
-it('truncates long branch and path values in the selection pane', () => {
+it('wraps long values in the selection pane', () => {
 	const model = createModel({
 		rows: [{
 			path: '/repo/.worktree/feature/this/is/a/very/long/path/that/keeps/going/until/the/panel/would/wrap',
 			shortPath: '.worktree/feature/long',
 			branch: 'feature/this-is-a-very-long-branch-name-that-wraps-and-keeps-going-past-the-panel-width',
+			headSha: '46af3f1c',
+			headCommit: {message: 'Render the complete commit summary even when the selection pane is narrow'},
 			tags: [],
 		}],
 		activePath: null,
@@ -895,15 +897,11 @@ it('truncates long branch and path values in the selection pane', () => {
 	});
 	const {lastFrame} = render(<App initialModel={model} actions={makeFakeActions(model)} windowSizeOverride={{columns: 120, rows: 30}} />);
 	const frame = lastFrame() ?? '';
-	const branchLine = frame.split('\n').find(line => line.includes('Branch: feature/this-is-a-very-long-')) ?? '';
-	expect(branchLine).toContain('Branch: feature/this-is-a-very-long-');
-	expect(branchLine).toContain('…');
-	expect(branchLine).not.toContain('Branch: feature/this-is-a-very-long-branch-name-that-wraps-and-keeps-going-past-the-panel-width');
 	expect(frame).toContain('Path: .worktree/feature/long');
-	const fullPathLine = frame.split('\n').find(line => line.includes('Full Path: /repo/.worktree/feature/')) ?? '';
-	expect(fullPathLine).toContain('Full Path: /repo/.worktree/feature/');
-	expect(fullPathLine).toContain('…');
-	expect(fullPathLine).not.toContain('Full Path: /repo/.worktree/feature/this/is/a/very/long/path/that/keeps/going/until/the/panel/would/wrap');
+	const compactFrame = stripAnsi(frame).replace(/[\s│╭╮╰╯─]/gu, '');
+	expect(compactFrame).toContain('Branch:feature/this-is-a-very-long-branch-name-that-wraps-and-keeps-going-past-the-panel-width');
+	expect(compactFrame).toContain('FullPath:/repo/.worktree/feature/this/is/a/very/long/path/that/keeps/going/until/the/panel/would/wrap');
+	expect(compactFrame).toContain('HEAD:46af3f1cRenderthecompletecommitsummaryevenwhentheselectionpaneisnarrow');
 });
 it('shows git and PR metadata in the selection pane', () => {
 	const model = createModel({
