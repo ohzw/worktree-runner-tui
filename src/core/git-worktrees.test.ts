@@ -37,18 +37,28 @@ describe('parseWorktreeListPorcelain', () => {
 });
 
 describe('sortWorktrees', () => {
-	it('orders by worktree creation date and does not move the active worktree', () => {
+	it('keeps the main worktree first and orders dated worktrees by creation date', () => {
 		const rows = parseWorktreeListPorcelain(porcelain, '/repo').map(row => ({
 			...row,
-			createdAtMs: row.path === '/repo' ? 1 : row.path === '/repo-other' ? 2 : 3,
+			createdAtMs: row.path === '/repo' ? 3 : row.path === '/repo-other' ? 2 : 1,
 		}));
 		const sorted = sortWorktrees(rows, '/repo/.worktree/feat-a');
-		expect(sorted.map(row => row.path)).toEqual(['/repo', '/repo-other', '/repo/.worktree/feat-a']);
+		expect(sorted.map(row => row.path)).toEqual(['/repo', '/repo/.worktree/feat-a', '/repo-other']);
 	});
-	it('uses deterministic ordering for all rows when a creation date is unavailable', () => {
+
+	it('places undated non-main worktrees after dated worktrees', () => {
 		const rows = parseWorktreeListPorcelain(porcelain, '/repo').map(row => ({
 			...row,
-			createdAtMs: row.path === '/repo' ? null : 1,
+			createdAtMs: row.path === '/repo/.worktree/feat-a' ? null : row.path === '/repo' ? 3 : 1,
+		}));
+		const sorted = sortWorktrees(rows, '/repo-other');
+		expect(sorted.map(row => row.path)).toEqual(['/repo', '/repo-other', '/repo/.worktree/feat-a']);
+	});
+
+	it('orders undated worktrees by branch and path without using active status', () => {
+		const rows = parseWorktreeListPorcelain(porcelain, '/repo').map(row => ({
+			...row,
+			createdAtMs: row.path === '/repo' ? 1 : null,
 		}));
 		const sorted = sortWorktrees(rows, '/repo-other');
 		expect(sorted.map(row => row.path)).toEqual(['/repo', '/repo/.worktree/feat-a', '/repo-other']);
