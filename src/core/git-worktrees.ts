@@ -48,25 +48,25 @@ export function parseWorktreeListPorcelain(input: string, mainWorktreePath: stri
 		});
 }
 
-function compareDeterministic(left: WorktreeRow, right: WorktreeRow): number {
-	if (left.isMain !== right.isMain) {
-		return left.isMain ? -1 : 1;
-	}
-
-	const branchCompare = left.branch.localeCompare(right.branch);
-	return branchCompare !== 0 ? branchCompare : left.path.localeCompare(right.path);
-}
 
 export function sortWorktrees(rows: WorktreeRow[], _activePath: string | null): WorktreeRow[] {
-	const hasMissingCreatedAt = rows.some(row => row.createdAtMs === null);
 	return [...rows].sort((left, right) => {
+		if (left.isMain !== right.isMain) {
+			return left.isMain ? -1 : 1;
+		}
+
 		const leftCreated = left.createdAtMs;
 		const rightCreated = right.createdAtMs;
-		if (!hasMissingCreatedAt && leftCreated !== null && rightCreated !== null && leftCreated !== rightCreated) {
+		if (leftCreated === null || rightCreated === null) {
+			if (leftCreated !== rightCreated) {
+				return leftCreated === null ? 1 : -1;
+			}
+		} else if (leftCreated !== rightCreated) {
 			return leftCreated - rightCreated;
 		}
 
-		return compareDeterministic(left, right);
+		const branchCompare = left.branch.localeCompare(right.branch);
+		return branchCompare !== 0 ? branchCompare : left.path.localeCompare(right.path);
 	});
 }
 
